@@ -199,7 +199,7 @@ class Manager(object):
                     
                 bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                 bubble_moves = []
-                if pkmn_id in bubble_dex and pkmn['atk'] > 1 and pkmn['def'] < 15 and pkmn['sta'] < 15:
+                if pkmn_id in bubble_dex and pkmn['atk'] > 10 and pkmn['def'] < 3 and pkmn['sta'] < 3:
                     log.info("{} may be a bubbler: Triggering alarm!".format(name))
                     pass
                 else:
