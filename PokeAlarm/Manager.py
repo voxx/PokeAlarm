@@ -196,7 +196,8 @@ class Manager(object):
                 if config['QUIET'] is False:
                     log.info("{} ignored: IVs ({:.2f}) not in range {:.2f} to {:.2f}.".format(
                         name, iv, filt['min_iv'], filt['max_iv']))
-                return
+                if is_bubbler(pkmn_id, pkmn['atk'], pkmn['def'], pkmn['sta']) is False:
+                    return
         else:
             log.debug("Pokemon IV's were not checked because they are unknown.")
             if filt['ignore_missing'] is True:
@@ -781,5 +782,14 @@ class Manager(object):
             log.error("Encountered error while getting driving data ({}: {})".format(type(e).__name__, e))
             log.debug("Stack trace: \n {}".format(traceback.format_exc()))
         return data
+    
+    # Custom Check For Bubblers
+    def is_bubbler(pkmn_id, pkmn_atk, pkmn_def, pkmn_sta):
+        dex = [25, 26, 50, 63, 64, 92, 93]
+        is_bubbler = False
+        if pkmn_id in dex and pkmn_atk > 10 and pkmn_def < 2 and pkmn_sta < 2:
+            is_bubbler = True
+            
+        return is_bubbler
 
     ####################################################################################################################
