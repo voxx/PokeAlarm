@@ -360,8 +360,13 @@ class Manager(object):
 
                         # Check for bubblestrat mons
                         bubble_dex = [25, 26, 50, 63, 64, 92, 93]
-                        if pkmn_id in bubble_dex and pkmn['atk'] > 10 and pkmn['def'] < 3 and pkmn['sta'] < 3:
+                        if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
                             log.info("{} may be a bubbler. Triggering VSNIPE CP Check!".format(name))
+
+                            vsnipe_data = get_pokemon_cp(lat, lng, pkmn_id)
+                            log.info("{} may be a bubbler. Waiting 20 seconds for VSNIPE CP response!".format(name))
+                            time.sleep(20)
+                            print(vsnipe_data)
 
                             passed = True
                         else:
