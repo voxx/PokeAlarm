@@ -358,10 +358,9 @@ class Manager(object):
                         bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                         if pkmn_id in bubble_dex and pkmn['atk'] > 10 and pkmn['def'] < 3 and pkmn['sta'] < 3:
                             log.info("{} may be a bubbler: Triggering alarm!".format(name))
-                            pass
+                            passed = True
                         else:
-                            return
-                    continue
+                            continue
             else:
                 if filt.ignore_missing is True:
                     log.info("{} rejected: 'IV' information was missing (F #{})".format(name, filt_ct))
