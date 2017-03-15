@@ -8,6 +8,7 @@ import traceback
 import os
 import re
 import sys
+import requests
 # 3rd Party Imports
 import gipc
 import googlemaps
@@ -18,6 +19,9 @@ from Utils import get_cardinal_dir, get_dist_as_str, get_earth_dist, get_path, g
     require_and_remove_key, parse_boolean, contains_arg
 log = logging.getLogger('Manager')
 
+fn = os.path.join(os.path.dirname(__file__), '../../vsnipe/config/config.json')
+with open(fn) as json_data_file:
+    vsnipe_config = json.load(json_data_file)
 
 class Manager(object):
 
@@ -357,7 +361,8 @@ class Manager(object):
                         # Check for bubblestrat mons
                         bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                         if pkmn_id in bubble_dex and pkmn['atk'] > 10 and pkmn['def'] < 3 and pkmn['sta'] < 3:
-                            log.info("{} may be a bubbler: Triggering alarm!".format(name))
+                            log.info("{} may be a bubbler. Triggering VSNIPE CP Check!".format(name))
+
                             passed = True
                         else:
                             continue
@@ -834,3 +839,17 @@ class Manager(object):
         return data
 
     ####################################################################################################################
+
+    def get_pokemon_cp(lat, lng, pid):
+        s = requests.Session()
+        # Send the pokemon data to VSNIPE API to check CP for level 30
+        try:
+            api_response	= s.post("{}://{}:{}/vsnipe/".format(vsnipe_config['server']['protocol'], vsnipe_config['server']['host'], vsnipe_config['server']['port'], lat, lng, pid))
+            response_text	= str(api_response.text)
+
+        except Exception as e:
+            status['message'] = '{} Exception occurred with the VSnipe API: {}'.format(response_code, e)
+            print(status['message'])
+            return 'ERROR'
+
+        return response_text
