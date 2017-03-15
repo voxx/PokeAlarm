@@ -196,7 +196,7 @@ class Manager(object):
                 if config['QUIET'] is False:
                     log.info("{} ignored: IVs ({:.2f}) not in range {:.2f} to {:.2f}.".format(
                         name, iv, filt['min_iv'], filt['max_iv']))
-                    
+
                 bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                 bubble_moves = []
                 if pkmn_id in bubble_dex and pkmn['atk'] > 10 and pkmn['def'] < 3 and pkmn['sta'] < 3:
