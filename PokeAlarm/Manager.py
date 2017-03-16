@@ -886,8 +886,7 @@ class Manager(object):
             api_response	= s.post(url, data=data)
             response_text	= str(api_response.text)
         except Exception as e:
-            status['message'] = 'Exception occurred with the VSnipe API: {}'.format(str(e))
-            log.info(status['message'])
+            log.info('Exception occurred with the VSnipe API: {}'.format(str(e)))
             return 'ERROR'
 
         return response_text
