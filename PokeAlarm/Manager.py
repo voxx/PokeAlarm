@@ -508,7 +508,7 @@ class Manager(object):
                         time.sleep(30)
                         
                         vsnipe = json.loads(vnsipe_data)
-                        print(vsnipe_data) # DEBUG
+                        print(vsnipe) # DEBUG
                         
                         # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0]:
