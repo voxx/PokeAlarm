@@ -493,20 +493,21 @@ class Manager(object):
         if len(self.__geofences) > 0 and pkmn['geofence'] == 'unknown':
             log.info("{} rejected: not inside geofence(s)".format(name))
             return
-        
-        # VSnipe Check CP for all alarmed pokemon
-        vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
-        log.info("{} triggered an alarm. Waiting 20 seconds for VSnipe CP check!".format(name))
-        time.sleep(20)
-        print(vsnipe_data) # DEBUG
 
-        # VSnipe check for valid api reponse
-        if 'pokemon' in vsnipe_data['data']:
-            cp = int(vsnipe_data['data']['pokemon']['cp'])
-            log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
-        else:
-            # VSnipe API check failed - should probably try again
-            log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
+        if cp != '?':
+            # VSnipe Check CP for all alarmed pokemon
+            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
+            log.info("{} triggered an alarm. Waiting 20 seconds for VSnipe CP check!".format(name))
+            time.sleep(20)
+            print(vsnipe_data) # DEBUG
+    
+            # VSnipe check for valid api reponse
+            if 'pokemon' in vsnipe_data['data']:
+                cp = int(vsnipe_data['data']['pokemon']['cp'])
+                log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
+            else:
+                # VSnipe API check failed - should probably try again
+                log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
 
         # Finally, add in all the extra crap we waited to calculate until now
         time_str = get_time_as_str(pkmn['disappear_time'], self.__timezone)
@@ -881,7 +882,7 @@ class Manager(object):
         try:
             api_response	= s.post("{}://{}:{}/vsnipe/".format(vsnipe_config['server']['protocol'], vsnipe_config['server']['host'], vsnipe_config['server']['port'], lat, lng, pid))
             response_text	= str(api_response.text)
-
+            response_code	= api_response.status_code
         except Exception as e:
             status['message'] = '{} Exception occurred with the VSnipe API: {}'.format(response_code, e)
             log.info(status['message'])
