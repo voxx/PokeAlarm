@@ -363,16 +363,16 @@ class Manager(object):
                         # Check for bubblestrat mons
                         bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                         if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
-                            log.info("{} may be a bubbler. Triggering VSNIPE CP Check!".format(name))
+                            log.info("{} may be a bubbler. Triggering Vsnipe CP Check!".format(name))
 
                             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
-                            log.info("{} may be a bubbler. Waiting 20 seconds for VSNIPE CP response!".format(name))
+                            log.info("Attempting to encounter {}. Waiting for VSnipe API.".format(name))
                             time.sleep(30)
                             print(vsnipe_data) # DEBUG
 
                             # Check for valid response
-                            if 'pokemon' in vsnipe_data['data']:
-                                cp = int(vsnipe_data['data']['pokemon']['cp'])
+                            if 'pokemon' in vsnipe_data['data'][0]:
+                                cp = int(vsnipe_data['data'][0]['pokemon']['cp'])
                                 # Check for valid low cp value
                                 if cp < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
@@ -508,12 +508,12 @@ class Manager(object):
                         print(vsnipe_data) # DEBUG
                     break
                 except Error as e:
-                    print ("Error occurred: " + str(e))
+                    print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
                     time.sleep(5)
         
                 # VSnipe check for valid api reponse
-                if 'pokemon' in vsnipe_data['data']:
-                    cp = int(vsnipe_data['data']['pokemon']['cp'])
+                if 'pokemon' in vsnipe_data['data'][0]:
+                    cp = int(vsnipe_data['data'][0]['pokemon']['cp'])
                     log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                 else:
                     # VSnipe API check failed - should probably try again
