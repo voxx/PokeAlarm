@@ -336,7 +336,7 @@ class Manager(object):
         quick_id = pkmn['quick_id']
         charge_id = pkmn['charge_id']
         size = pkmn['size']
-        cp = 0
+        cp = '?'
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -371,9 +371,9 @@ class Manager(object):
 
                             # Check for valid response
                             if 'pokemon' in vsnipe_data['data']:
-                                cp = vsnipe_data['data']['pokemon']['cp']
+                                cp = int(vsnipe_data['data']['pokemon']['cp'])
                                 # Check for valid low cp value
-                                if int(cp) < 55:
+                                if cp < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
                                     passed = True
                                 else:
@@ -508,7 +508,7 @@ class Manager(object):
             'iv_2': "{:.2f}".format(iv) if iv != '?' else '?',
             'quick_move': self.__move_name.get(quick_id, 'unknown'),
             'charge_move': self.__move_name.get(charge_id, 'unknown'),
-            'cp': "{:.3f}".format(cp) if cp != '0' else '???',
+            'cp': "{:.3f}".format(cp) if cp != '?' else '?',
         })
         self.add_optional_travel_arguments(pkmn)
 
