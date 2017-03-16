@@ -879,7 +879,7 @@ class Manager(object):
     def get_pokemon_cp(self, lat, lng, pid):
         s = requests.Session()
         data = {"lat":lat, "lng":lng, "pid":pid}
-        url = vsnipe_config['server']['protocol'] + "://" + vsnipe_config['server']['host'] + ":" + vsnipe_config['server']['port'] + "/vsnipe"
+        url = vsnipe_config['server']['protocol'] + "://" + vsnipe_config['server']['host'] + ":" + vsnipe_config['server']['port'] + "/vsnipe/"
 
         # Send the pokemon data to VSNIPE API to check CP for level 30
         try:
