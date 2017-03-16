@@ -373,10 +373,10 @@ class Manager(object):
                             print(vsnipe) # DEBUG
                             # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
-                                print("Valid response.")
-                                cp = int(vsnipe['data'][0].pokemon.cp)
+                                print("Valid pokemon in response data.")
+                                cp = vsnipe['data'][0].pokemon.cp
                                 # Check for valid low cp value
-                                if cp < 55:
+                                if int(cp) < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
                                     passed = True
                                 else:
@@ -505,22 +505,24 @@ class Manager(object):
                     if attempts < 3:
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
-                        
                         time.sleep(30)
+                        
+                        vsnipe = json.loads(vnsipe_data)
                         print(vsnipe_data) # DEBUG
+                        
+                        # VSnipe check for valid api reponse
+                        if 'pokemon' in vsnipe['data'][0]:
+                            print("Valid pokemon in response data.")
+                            cp = vsnipe['data'][0].pokemon.cp
+                            log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
+                        else:
+                            # VSnipe API check failed - should probably try again
+                            log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
+                            
                     break
                 except Error as e:
                     print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
                     time.sleep(5)
-        
-                vsnipe = json.loads(vnsipe_data)
-                # VSnipe check for valid api reponse
-                if 'pokemon' in vsnipe['data'][0]:
-                    cp = int(vsnipe['data'][0].pokemon.cp)
-                    log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
-                else:
-                    # VSnipe API check failed - should probably try again
-                    log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
 
         # Finally, add in all the extra crap we waited to calculate until now
         time_str = get_time_as_str(pkmn['disappear_time'], self.__timezone)
