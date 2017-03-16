@@ -509,7 +509,7 @@ class Manager(object):
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
                         time.sleep(30)
                         
-                        vsnipe = json.loads(vnsipe_data)
+                        vsnipe = json.loads(vsnipe_data)
                         print(vsnipe) # DEBUG
                         
                         # VSnipe check for valid api reponse
