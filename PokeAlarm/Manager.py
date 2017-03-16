@@ -878,9 +878,12 @@ class Manager(object):
 
     def get_pokemon_cp(self, lat, lng, pid):
         s = requests.Session()
+        data = {"lat":lat, "lng":lng, "pid":pid}
+        url = vsnipe_config['server']['protocol'] + "://" + vsnipe_config['server']['host'] + ":" + vsnipe_config['server']['port'] + "/vsnipe"
+
         # Send the pokemon data to VSNIPE API to check CP for level 30
         try:
-            api_response	= s.post("{}://{}:{}/vsnipe/".format(vsnipe_config['server']['protocol'], vsnipe_config['server']['host'], vsnipe_config['server']['port'], lat, lng, pid))
+            api_response	= s.post(url, data=data)
             response_text	= str(api_response.text)
         except Exception as e:
             status['message'] = 'Exception occurred with the VSnipe API: {}'.format(str(e))
