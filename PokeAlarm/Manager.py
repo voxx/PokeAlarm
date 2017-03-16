@@ -367,7 +367,7 @@ class Manager(object):
 
                             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                             log.info("{} may be a bubbler. Waiting 20 seconds for VSNIPE CP response!".format(name))
-                            time.sleep(20)
+                            time.sleep(30)
                             print(vsnipe_data) # DEBUG
 
                             # Check for valid response
@@ -499,7 +499,7 @@ class Manager(object):
             # VSnipe Check CP for all alarmed pokemon
             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
             log.info("{} triggered an alarm. Waiting 20 seconds for VSnipe CP check!".format(name))
-            time.sleep(20)
+            time.sleep(30)
             print(vsnipe_data) # DEBUG
     
             # VSnipe check for valid api reponse
