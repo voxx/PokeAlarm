@@ -515,7 +515,7 @@ class Manager(object):
                         # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             print("Valid pokemon in response data.")
-                            print(vsnipe['data'][0]['pokemon'])
+                            print(vsnipe['data'][0]['pokemon'].cp) # DEBUG
                             cp = vsnipe['data'][0]['pokemon']['cp']
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
