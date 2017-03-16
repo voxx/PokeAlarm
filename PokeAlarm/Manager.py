@@ -374,7 +374,7 @@ class Manager(object):
                             # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid response.")
-                                cp = int(vsnipe['data'][0]['pokemon']['cp'])
+                                cp = int(vsnipe['data'][0].pokemon.cp)
                                 # Check for valid low cp value
                                 if cp < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
@@ -516,7 +516,7 @@ class Manager(object):
                 vsnipe = json.loads(vnsipe_data)
                 # VSnipe check for valid api reponse
                 if 'pokemon' in vsnipe['data'][0]:
-                    cp = int(vsnipe['data'][0]['pokemon']['cp'])
+                    cp = int(vsnipe['data'][0].pokemon.cp)
                     log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                 else:
                     # VSnipe API check failed - should probably try again
