@@ -368,9 +368,9 @@ class Manager(object):
                             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                             log.info("Attempting to encounter {}. Waiting for VSnipe API.".format(name))
                             time.sleep(30)
-                            print(vsnipe_data) # DEBUG
 
                             vsnipe = json.loads(vsnipe_data)
+                            print(vsnipe) # DEBUG
                             # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid response.")
