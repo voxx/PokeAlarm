@@ -494,7 +494,7 @@ class Manager(object):
             log.info("{} rejected: not inside geofence(s)".format(name))
             return
 
-        if cp != '?':
+        if cp == '?':
             # VSnipe Check CP for all alarmed pokemon
             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
             log.info("{} triggered an alarm. Waiting 20 seconds for VSnipe CP check!".format(name))
