@@ -370,13 +370,10 @@ class Manager(object):
                             time.sleep(30)
 
                             vsnipe = json.loads(vsnipe_data)
-                            #print(vsnipe['data'][0]) # DEBUG
-                            # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid pokemon in response data.")
-                                print(vsnipe['data'][0]['pokemon'].cp)
-                                cp = vsnipe['data'][0]['pokemon']['cp']
-                                print(cp)
+                                cp = getattr(vsnipe['data'][0]['pokemon'], "cp")
+                                print(cp) # DEBUG
                                 # Check for valid low cp value
                                 if int(cp) < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
@@ -504,7 +501,7 @@ class Manager(object):
             while True:
                 attempts += 1
                 try:
-                    if attempts < 2:
+                    if attempts < 3:
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
                         time.sleep(30)
