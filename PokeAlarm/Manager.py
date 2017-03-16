@@ -504,7 +504,7 @@ class Manager(object):
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
                         
-                        time.sleep(45)
+                        time.sleep(30)
                         print(vsnipe_data) # DEBUG
                     break
                 except Error as e:
