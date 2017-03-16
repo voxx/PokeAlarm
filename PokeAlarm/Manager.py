@@ -336,6 +336,7 @@ class Manager(object):
         quick_id = pkmn['quick_id']
         charge_id = pkmn['charge_id']
         size = pkmn['size']
+        cp = 0
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -363,13 +364,27 @@ class Manager(object):
                         if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
                             log.info("{} may be a bubbler. Triggering VSNIPE CP Check!".format(name))
 
-                            vsnipe_data = get_pokemon_cp(lat, lng, pkmn_id)
+                            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                             log.info("{} may be a bubbler. Waiting 20 seconds for VSNIPE CP response!".format(name))
                             time.sleep(20)
-                            print(vsnipe_data)
+                            print(vsnipe_data) # DEBUG
 
-                            passed = True
+                            # Check for valid response
+                            if 'pokemon' in vsnipe_data['data']:
+                                cp = vsnipe_data['data']['pokemon']['cp']
+                                # Check for valid low cp value
+                                if int(cp) < 55:
+                                    log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
+                                    passed = True
+                                else:
+                                    log.info('VSnipe rejected bubbler! {} CP is {}.'.format(name, str(cp)))
+                                    continue
+                            else:
+                                # VSnipe API check failed - should probably try again
+                                log.info('VSnipe check failed. {} CP is unknown.'.format(name))
+                                continue
                         else:
+                            # Pokemon not in bubble dex or IV's are not in bubbler range.
                             continue
             else:
                 if filt.ignore_missing is True:
@@ -492,7 +507,8 @@ class Manager(object):
             'iv': "{:.1f}".format(iv) if iv != '?' else '?',
             'iv_2': "{:.2f}".format(iv) if iv != '?' else '?',
             'quick_move': self.__move_name.get(quick_id, 'unknown'),
-            'charge_move': self.__move_name.get(charge_id, 'unknown')
+            'charge_move': self.__move_name.get(charge_id, 'unknown'),
+            'cp': "{:.3f}".format(cp) if cp != '0' else '???',
         })
         self.add_optional_travel_arguments(pkmn)
 
@@ -845,7 +861,7 @@ class Manager(object):
 
     ####################################################################################################################
 
-    def get_pokemon_cp(lat, lng, pid):
+    def get_pokemon_cp(self, lat, lng, pid):
         s = requests.Session()
         # Send the pokemon data to VSNIPE API to check CP for level 30
         try:
@@ -854,7 +870,7 @@ class Manager(object):
 
         except Exception as e:
             status['message'] = '{} Exception occurred with the VSnipe API: {}'.format(response_code, e)
-            print(status['message'])
+            log.info(status['message'])
             return 'ERROR'
 
         return response_text
