@@ -368,7 +368,7 @@ class Manager(object):
                             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                             log.info("Attempting to encounter {}. Waiting for VSnipe API.".format(name))
                             time.sleep(30)
-                            print(vsnipe_data['data'][0]) # DEBUG
+                            print(vsnipe_data['data']) # DEBUG
 
                             # Check for valid response
                             if 'pokemon' in vsnipe_data['data'][0]:
@@ -506,7 +506,7 @@ class Manager(object):
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
                         
                         time.sleep(30)
-                        print(vsnipe_data) # DEBUG
+                        print(vsnipe_data['data']) # DEBUG
                     break
                 except Error as e:
                     print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
