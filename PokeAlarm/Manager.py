@@ -374,7 +374,7 @@ class Manager(object):
                             # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid pokemon in response data.")
-                                cp = vsnipe['data'][0].pokemon.cp
+                                cp = vsnipe['data'][0]['pokemon']['cp']
                                 # Check for valid low cp value
                                 if int(cp) < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
@@ -513,14 +513,14 @@ class Manager(object):
                         # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0]:
                             print("Valid pokemon in response data.")
-                            cp = vsnipe['data'][0].pokemon.cp
+                            cp = vsnipe['data'][0]['pokemon']['cp']
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                         else:
                             # VSnipe API check failed - should probably try again
                             log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
                             
                     break
-                except Error as e:
+                except Exception as e:
                     print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
                     time.sleep(5)
 
