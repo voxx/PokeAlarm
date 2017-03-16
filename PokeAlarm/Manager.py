@@ -498,12 +498,13 @@ class Manager(object):
         attempts = 0
         if cp == '?':
             while True:
-                time.sleep(60)
                 attempts += 1
                 try:
                     if attempts < 3:
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
+                        
+                        time.sleep(45)
                         print(vsnipe_data) # DEBUG
                     break
                 except Error as e:
