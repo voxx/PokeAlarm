@@ -370,11 +370,11 @@ class Manager(object):
                             time.sleep(30)
 
                             vsnipe = json.loads(vsnipe_data)
-                            print(vsnipe['data'][0]) # DEBUG
+                            #print(vsnipe['data'][0]) # DEBUG
                             # Check for valid response
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid pokemon in response data.")
-                                print(vsnipe['data'][0]['pokemon'])
+                                print(vsnipe['data'][0]['pokemon'].cp)
                                 cp = vsnipe['data'][0]['pokemon']['cp']
                                 print(cp)
                                 # Check for valid low cp value
@@ -513,9 +513,9 @@ class Manager(object):
                         print(vsnipe) # DEBUG
                         
                         # VSnipe check for valid api reponse
-                        if 'pokemon' in vsnipe['data'][0]:
+                        if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             print("Valid pokemon in response data.")
-                            print(vsnipe['data'][0])
+                            print(vsnipe['data'][0]['pokemon'])
                             cp = vsnipe['data'][0]['pokemon']['cp']
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
