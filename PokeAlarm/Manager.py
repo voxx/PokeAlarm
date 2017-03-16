@@ -510,13 +510,13 @@ class Manager(object):
                         time.sleep(30)
                         
                         vsnipe = json.loads(vsnipe_data)
-                        print(vsnipe) # DEBUG
+                        print(vsnipe['data'][0]['pokemon']) # DEBUG
                         
                         # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             print("Valid pokemon in response data.")
-                            print(vsnipe['data'][0]['pokemon'].cp) # DEBUG
-                            cp = vsnipe['data'][0]['pokemon']['cp']
+                            cp = getattr(vsnipe['data'][0]['pokemon'], "cp")
+                            print(cp) # DEBUG
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
                         else:
