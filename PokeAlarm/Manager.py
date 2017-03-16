@@ -374,7 +374,7 @@ class Manager(object):
                             if 'pokemon' in vsnipe['data'][0]:
                                 print("Valid pokemon in response data.")
                                 d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                                cp = getattr(d, "cp")
+                                cp = d['cp']
                                 print(cp) # DEBUG
                                 # Check for valid low cp value
                                 if int(cp) < 55:
@@ -515,7 +515,7 @@ class Manager(object):
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             print("Valid pokemon in response data.")
                             d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                            cp = getattr(d, "cp")
+                            cp = d['cp']
                             print(cp) # DEBUG
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
