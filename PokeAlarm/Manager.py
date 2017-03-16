@@ -515,7 +515,7 @@ class Manager(object):
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             print("Valid pokemon in response data.")
                             d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                            cp = getattr(vsnipe['data'][0]['pokemon'], "cp")
+                            cp = getattr(d, "cp")
                             print(cp) # DEBUG
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
