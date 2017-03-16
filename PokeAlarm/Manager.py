@@ -495,20 +495,28 @@ class Manager(object):
             log.info("{} rejected: not inside geofence(s)".format(name))
             return
 
+        attempts = 0
         if cp == '?':
-            # VSnipe Check CP for all alarmed pokemon
-            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
-            log.info("{} triggered an alarm. Waiting 20 seconds for VSnipe CP check!".format(name))
-            time.sleep(30)
-            print(vsnipe_data) # DEBUG
-    
-            # VSnipe check for valid api reponse
-            if 'pokemon' in vsnipe_data['data']:
-                cp = int(vsnipe_data['data']['pokemon']['cp'])
-                log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
-            else:
-                # VSnipe API check failed - should probably try again
-                log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
+            while True:
+                time.sleep(60)
+                attempts += 1
+                try:
+                    if attempts < 3:
+                        vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
+                        log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
+                        print(vsnipe_data) # DEBUG
+                    break
+                except Error as e:
+                    print ("Error occurred: " + str(e))
+                    time.sleep(5)
+        
+                # VSnipe check for valid api reponse
+                if 'pokemon' in vsnipe_data['data']:
+                    cp = int(vsnipe_data['data']['pokemon']['cp'])
+                    log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
+                else:
+                    # VSnipe API check failed - should probably try again
+                    log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
 
         # Finally, add in all the extra crap we waited to calculate until now
         time_str = get_time_as_str(pkmn['disappear_time'], self.__timezone)
@@ -884,7 +892,7 @@ class Manager(object):
 
         # Send the pokemon data to VSNIPE API to check CP for level 30
         try:
-            api_response	= s.post(url, data=data)
+            api_response	= s.post(url, data=data, timeout=None)
             response_text	= str(api_response.text)
         except Exception as e:
             log.info('Exception occurred with the VSnipe API: {}'.format(str(e)))
