@@ -71,7 +71,8 @@ class RocketMap:
             'gender': get_pokemon_gender(check_for_none(int, data.get('gender'), '?')),
             'size': 'unknown',
             'gmaps': get_gmaps_link(lat, lng),
-            'cp': check_for_none(int, data.get('cp'), '?')
+            'cp': check_for_none(int, data.get('cp'), '?'),
+            'level': check_for_none(int, data.get('level'), '?')
         }
         if pkmn['atk'] != '?' or pkmn['def'] != '?' or pkmn['sta'] != '?':
             pkmn['iv'] = float(((pkmn['atk'] + pkmn['def'] + pkmn['sta']) * 100) / float(45))

@@ -339,6 +339,7 @@ class Manager(object):
         charge_id = pkmn['charge_id']
         size = pkmn['size']
         cp = '?'
+        level = '?'
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -511,6 +512,7 @@ class Manager(object):
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
                             cp = d['cp']
+                            level = d['level']
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
                         else:
@@ -537,6 +539,7 @@ class Manager(object):
             'quick_move': self.__move_name.get(quick_id, 'unknown'),
             'charge_move': self.__move_name.get(charge_id, 'unknown'),
             'cp': "{}".format(str(cp)) if cp != '?' else '?',
+            'level': "{}".format(str(int(level))) if level != '?' else '?'
         })
         self.add_optional_travel_arguments(pkmn)
 
