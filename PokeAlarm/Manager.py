@@ -369,12 +369,13 @@ class Manager(object):
 
                             vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                             log.info("Attempting to encounter {}. Waiting for VSnipe API.".format(name))
-                            time.sleep(30)
+                            #time.sleep(30)
 
                             vsnipe = json.loads(vsnipe_data)
                             if 'pokemon' in vsnipe['data'][0]:
                                 d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
                                 cp = d['cp']
+                                level = d['level']
                                 # Check for valid low cp value
                                 if int(cp) < 55:
                                     log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
@@ -505,9 +506,9 @@ class Manager(object):
                     if attempts < 3:
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
-                        time.sleep(30)
+                        #time.sleep(30)
 
-                        vsnipe = json.loads(vsnipe_data)                        
+                        vsnipe = json.loads(vsnipe_data)
                         # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
@@ -539,7 +540,7 @@ class Manager(object):
             'quick_move': self.__move_name.get(quick_id, 'unknown'),
             'charge_move': self.__move_name.get(charge_id, 'unknown'),
             'cp': "{}".format(str(cp)) if cp != '?' else '?',
-            'level': "{}".format(str(int(level))) if level != '?' else '?'
+            'level': "{}".format(str(level)) if level != '?' else '?'
         })
         self.add_optional_travel_arguments(pkmn)
 
