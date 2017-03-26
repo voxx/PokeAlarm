@@ -36,7 +36,8 @@ class Manager(object):
 
         # Get the Google Maps API
         self.__google_key = google_key
-        self.__gmaps_client = googlemaps.Client(key=self.__google_key, timeout=1) if google_key is not None else None
+        self.__gmaps_client = \
+            googlemaps.Client(key=self.__google_key, timeout=3, retry_timeout=4) if google_key is not None else None
         self.__api_req = {'REVERSE_LOCATION': False, 'WALK_DIST': False, 'BIKE_DIST': False, 'DRIVE_DIST': False}
 
         # Setup the language-specific stuff
@@ -90,6 +91,8 @@ class Manager(object):
             log.info("Loading Filters from file at {}".format(file_path))
             with open(file_path, 'r') as f:
                 filters = json.load(f)
+            if type(filters) is not dict:
+                log.critical("Filters file's must be a JSON object: { \"pokemon\":{...},... }")
 
             # Load in the Pokemon Section
             self.__pokemon_settings = load_pokemon_section(
@@ -161,10 +164,13 @@ class Manager(object):
         try:
             with open(file_path, 'r') as f:
                 alarm_settings = json.load(f)
+            if type(alarm_settings) is not list:
+                log.critical("Alarms file must be a list of Alarms objects - [ {...}, {...}, ... {...} ]")
+                sys.exit(1)
             self.__alarms = []
             for alarm in alarm_settings:
-                if parse_boolean(alarm.pop('active')) is True:
-                    _type = alarm.pop('type')
+                if parse_boolean(require_and_remove_key('active', alarm, "Alarm objects in Alarms file.")) is True:
+                    _type = require_and_remove_key('type', alarm, "Alarm objects in Alarms file.")
                     self.set_optional_args(str(alarm))
                     if _type == 'discord':
                         from Discord import DiscordAlarm
@@ -193,6 +199,7 @@ class Manager(object):
                         sys.exit(1)
                 else:
                     log.debug("Alarm not activated: " + alarm['type'] + " because value not set to \"True\"")
+            log.info("{} active alarms found.".format(len(self.__alarms)))
             return  # all done
         except ValueError as e:
             log.error("Encountered error while loading Alarms file: {}: {}".format(type(e).__name__, e))
@@ -204,7 +211,7 @@ class Manager(object):
             log.error("PokeAlarm was unable to find a filters file at {}." +
                       "Please check that this file exists and PA has read permissions.").format(file_path)
         except Exception as e:
-            log.error("Encountered error while loading Filters: {}: {}".format(type(e).__name__, e))
+            log.error("Encountered error while loading Alarms: {}: {}".format(type(e).__name__, e))
         log.debug("Stack trace: \n {}".format(traceback.format_exc()))
         sys.exit(1)
 
@@ -506,7 +513,6 @@ class Manager(object):
                     if attempts < 3:
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
                         log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
-                        #time.sleep(30)
 
                         vsnipe = json.loads(vsnipe_data)
                         # VSnipe check for valid api reponse
@@ -519,7 +525,7 @@ class Manager(object):
                         else:
                             # VSnipe API check failed - should probably try again
                             log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
-                    else:   
+                    else:
                         break
                 except Exception as e:
                     print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
@@ -797,13 +803,14 @@ class Manager(object):
                 result = self.__gmaps_client.geocode(location_name)
                 loc = result[0]['geometry']['location']  # Get the first (most likely) result
                 latitude, longitude = loc.get("lat"), loc.get("lng")
-            log.info("Location found: {:f},{:f}".format(latitude, longitude))
+            log.info("Coordinates found for '{}': {:f},{:f}".format(location_name, latitude, longitude))
             return [latitude, longitude]
         except Exception as e:
             log.error("Encountered error while getting error by name ({}: {})".format(type(e).__name__, e))
             log.debug("Stack trace: \n {}".format(traceback.format_exc()))
-            log.error("Please make sure that your location is either the correct name of a place, or a pair of " +
-                      "coordinates seperated by either a space or a comma.")
+            log.error("Encounted error looking for location {}.".format(location_name)
+                      + "Please make sure your location is in the correct format")
+            sys.exit(1)
 
     # Returns the name of the location based on lat and lng
     def reverse_location(self, lat, lng):

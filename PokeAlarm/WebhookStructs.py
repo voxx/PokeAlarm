@@ -5,7 +5,7 @@ import traceback
 # 3rd Party Imports
 # Local Imports
 from Utils import get_gmaps_link, get_move_damage, get_move_dps, get_move_duration,\
-    get_move_energy, get_pokemon_gender, get_pokemon_size
+    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link
 
 log = logging.getLogger('WebhookStructs')
 
@@ -71,6 +71,7 @@ class RocketMap:
             'gender': get_pokemon_gender(check_for_none(int, data.get('gender'), '?')),
             'size': 'unknown',
             'gmaps': get_gmaps_link(lat, lng),
+            'applemaps': get_applemaps_link(lat, lng),
             'cp': check_for_none(int, data.get('cp'), '?'),
             'level': check_for_none(int, data.get('level'), '?')
         }
