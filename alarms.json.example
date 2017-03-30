@@ -3,6 +3,21 @@
     "active": "False",
     "type": "discord",
     "webhook_url": "YOUR_WEBHOOK_URL"
+    "startup_message": "False",
+    "pokemon":{
+      "username": "<level> <pkmn><gender> [<cp>]",
+      "icon_url": "https://raw.githubusercontent.com/kvangent/PokeAlarm/master/icons/<pkmn_id>.png",
+      "title": "<iv>% (<atk>/<def>/<sta>) (<quick_move>/<charge_move>)",
+      "url": "<gmaps>",
+      "body": "Despawns: <24h_time> (<time_left>)",
+      "map": {
+        "enabled":"true",
+        "width":"250",
+        "height":"125",
+        "maptype":"roadmap",
+        "zoom": "15"
+      }
+    }
   },
   {
     "active": "False",
