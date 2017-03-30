@@ -22,7 +22,7 @@ from Utils import get_cardinal_dir, get_dist_as_str, get_earth_dist, get_path, g
 log = logging.getLogger('Manager')
 
 vsc = os.path.join(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir)), 'vsnipe/config/config.json') # Path to VSnipe Config
-with open(fn) as json_data_file:
+with open(vsc) as json_data_file:
     vsnipe_config = json.load(json_data_file)
 
 class Manager(object):
