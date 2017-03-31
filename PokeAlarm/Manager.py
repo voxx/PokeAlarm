@@ -372,31 +372,41 @@ class Manager(object):
                         # Check for bubblestrat mons
                         bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                         if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
-                            log.info("{} may be a bubbler. Triggering Vsnipe CP Check!".format(name))
+                            log.info("{} may be a bubbler. Triggering VSnipe CP Check!".format(name))
 
-                            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
-                            log.info("Attempting to encounter {}. Waiting for VSnipe API.".format(name))
-                            #time.sleep(30)
+                            attempts = 0
+                            if cp == '?':
+                                while True:
+                                    attempts += 1
+                                    try:
+                                        if attempts < 3:
+                                            log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempt, name))
+                                            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
 
-                            vsnipe = json.loads(vsnipe_data)
-                            if 'pokemon' in vsnipe['data'][0]:
-                                d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                                cp = d['cp']
-                                level = d['level']
-                                # Check for valid low cp value
-                                if int(cp) < 55:
-                                    log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
-                                    passed = True
-                                else:
-                                    log.info('VSnipe rejected bubbler! {} CP is {}.'.format(name, str(cp)))
-                                    continue
-                            else:
-                                # VSnipe API check failed - should probably try again
-                                log.info('VSnipe check failed. {} CP is unknown.'.format(name))
-                                continue
-                        else:
-                            # Pokemon not in bubble dex or IV's are not in bubbler range.
-                            continue
+                                            vsnipe = json.loads(vsnipe_data)
+                                            if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
+                                                d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
+                                                cp = d['cp']
+                                                level = d['level']
+
+                                                # Check potential "bubble" attacker/defender for low cp value and low level
+                                                if int(cp) < 35 and int(level) < 4:
+                                                    log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
+                                                    passed = True
+                                                else:
+                                                    log.info('{} rejected: CP is {} and it is not a bubbler.'.format(name, str(cp)))
+                                                break
+                                            else:
+                                                # VSnipe API check failed - try again if under max attempts
+                                                log.info('VSnipe attempt {} failed for {}.'.format(attempt, name))
+                                        else:
+                                            # Exceeded maximum attempts - give up
+                                            log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempt, name))
+                                            break
+                                    except Exception as e:
+                                        log.info("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
+                                        time.sleep(5)
+                    continue
             else:
                 if filt.ignore_missing is True:
                     log.info("{} rejected: 'IV' information was missing (F #{})".format(name, filt_ct))
