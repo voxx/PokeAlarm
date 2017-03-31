@@ -379,7 +379,7 @@ class Manager(object):
                                 attempts += 1
                                 try:
                                     if attempts < 3:
-                                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempt, name))
+                                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
                                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
 
                                         vsnipe = json.loads(vsnipe_data)
@@ -397,10 +397,10 @@ class Manager(object):
                                             break
                                         else:
                                             # VSnipe API check failed - try again if under max attempts
-                                            log.info('VSnipe attempt {} failed for {}.'.format(attempt, name))
+                                            log.info('VSnipe attempt {} failed for {}.'.format(attempts, name))
                                     else:
                                         # Exceeded maximum attempts - give up
-                                        log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempt, name))
+                                        log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
                                         break
                                 except Exception as e:
                                     log.info("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
