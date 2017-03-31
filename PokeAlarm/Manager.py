@@ -375,37 +375,36 @@ class Manager(object):
                             log.info("{} may be a bubbler. Triggering VSnipe CP Check!".format(name))
 
                             attempts = 0
-                            if cp == '?':
-                                while True:
-                                    attempts += 1
-                                    try:
-                                        if attempts < 3:
-                                            log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempt, name))
-                                            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
+                            while True:
+                                attempts += 1
+                                try:
+                                    if attempts < 3:
+                                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempt, name))
+                                        vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
 
-                                            vsnipe = json.loads(vsnipe_data)
-                                            if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
-                                                d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                                                cp = d['cp']
-                                                level = d['level']
+                                        vsnipe = json.loads(vsnipe_data)
+                                        if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
+                                            d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
+                                            cp = d['cp']
+                                            level = d['level']
 
-                                                # Check potential "bubble" attacker/defender for low cp value and low level
-                                                if int(cp) < 35 and int(level) < 4:
-                                                    log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
-                                                    passed = True
-                                                else:
-                                                    log.info('{} rejected: CP is {} and it is not a bubbler.'.format(name, str(cp)))
-                                                break
+                                            # Check potential "bubble" attacker/defender for low cp value and low level
+                                            if int(cp) < 35 and int(level) < 4:
+                                                log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
+                                                passed = True
                                             else:
-                                                # VSnipe API check failed - try again if under max attempts
-                                                log.info('VSnipe attempt {} failed for {}.'.format(attempt, name))
-                                        else:
-                                            # Exceeded maximum attempts - give up
-                                            log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempt, name))
+                                                log.info('{} rejected: CP is {} and it is not a bubbler.'.format(name, str(cp)))
                                             break
-                                    except Exception as e:
-                                        log.info("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
-                                        time.sleep(5)
+                                        else:
+                                            # VSnipe API check failed - try again if under max attempts
+                                            log.info('VSnipe attempt {} failed for {}.'.format(attempt, name))
+                                    else:
+                                        # Exceeded maximum attempts - give up
+                                        log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempt, name))
+                                        break
+                                except Exception as e:
+                                    log.info("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
+                                    time.sleep(5)
                     continue
             else:
                 if filt.ignore_missing is True:
