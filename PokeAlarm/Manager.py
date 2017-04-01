@@ -397,13 +397,13 @@ class Manager(object):
                                             break
                                         else:
                                             # VSnipe API check failed - try again if under max attempts
-                                            log.info('VSnipe attempt {} failed for {}.'.format(attempts, name))
+                                            log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
                                     else:
                                         # Exceeded maximum attempts - give up
-                                        log.info('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
+                                        log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
                                         break
                                 except Exception as e:
-                                    log.info("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
+                                    log.error("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
                                     time.sleep(5)
                     continue
             else:
@@ -520,11 +520,10 @@ class Manager(object):
                 attempts += 1
                 try:
                     if attempts < 3:
+                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
                         vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
-                        log.info("{} triggered an alarm. Waiting for VSnipe CP check!".format(name))
 
                         vsnipe = json.loads(vsnipe_data)
-                        # VSnipe check for valid api reponse
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                             d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
                             cp = d['cp']
@@ -532,12 +531,13 @@ class Manager(object):
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
                         else:
-                            # VSnipe API check failed - should probably try again
-                            log.info('VSnipe encounter failed. {} CP is unknown.'.format(name))
+                            # VSnipe API check failed - try again if under max attempts
+                            log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
                     else:
                         break
                 except Exception as e:
-                    print ("Attempt {} failed! Error: {}".format(attempts, str(e)))
+                    # Exceeded maximum attempts - give up
+                    log.error("Attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
                     time.sleep(5)
 
         # Finally, add in all the extra crap we waited to calculate until now
