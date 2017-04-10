@@ -517,7 +517,7 @@ class Manager(object):
 
         attempts = 0
         if cp == '?':
-            pid = ditto_id ? ditto_id : pkmn_id
+            pid = ditto_id if ditto_id != None else pkmn_id
             while True:
                 attempts += 1
                 try:
