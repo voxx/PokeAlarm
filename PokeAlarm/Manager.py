@@ -533,9 +533,11 @@ class Manager(object):
                             log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                             break
                         else:
-                            # VSnipe API check failed - try again if under max attempts
-                            log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
+                            # VSnipe API check failed
+                            log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
                     else:
+                        # VSnipe API check failed - try again if under max attempts
+                        log.error('VSnipe max attempts exceeded for {}. Giving up!'.format(name))
                         break
                 except Exception as e:
                     # Exceeded maximum attempts - give up
