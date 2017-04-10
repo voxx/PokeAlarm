@@ -347,6 +347,7 @@ class Manager(object):
         size = pkmn['size']
         cp = '?'
         level = '?'
+        ditto_id = pkmn['ditto_id']
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -516,12 +517,13 @@ class Manager(object):
 
         attempts = 0
         if cp == '?':
+            pid = ditto_id ? ditto_id : pkmn_id
             while True:
                 attempts += 1
                 try:
                     if attempts < 3:
                         log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
-                        vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
+                        vsnipe_data = self.get_pokemon_cp(lat, lng, pid)
 
                         vsnipe = json.loads(vsnipe_data)
                         if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
