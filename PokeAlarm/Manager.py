@@ -347,7 +347,7 @@ class Manager(object):
         size = pkmn['size']
         cp = '?'
         level = '?'
-        ditto_id = pkmn['ditto_id'] if pkmn['ditto_id'] != None else None
+        ditto_id = None if 'ditto_id' not in pkmn else pkmn['ditto_id']
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
