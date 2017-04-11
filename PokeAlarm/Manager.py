@@ -347,7 +347,7 @@ class Manager(object):
         size = pkmn['size']
         cp = '?'
         level = '?'
-        ditto_id = False if 'ditto_id' not in pkmn else pkmn['ditto_id']
+        ditto_id = pkmn['ditto_id']
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -517,7 +517,7 @@ class Manager(object):
 
         attempts = 0
         if cp == '?':
-            pid = ditto_id if ditto_id is not False else pkmn_id
+            pid = ditto_id if ditto_id is not '?' else pkmn_id
             while True:
                 attempts += 1
                 try:
