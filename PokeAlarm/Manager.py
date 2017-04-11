@@ -27,7 +27,7 @@ with open(vsc) as json_data_file:
 
 class Manager(object):
 
-    def __init__(self, name, google_key, locale, units, timezone, time_limit, location, quiet,
+    def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, quiet,
                  filter_file, geofence_file, alarm_file, debug):
         # Set the name of the Manager
         self.__name = str(name).lower()
@@ -64,7 +64,7 @@ class Manager(object):
             self.load_geofence_file(get_path(geofence_file))
         # Create the alarms to send notifications out with
         self.__alarms = []
-        self.load_alarms_file(get_path(alarm_file))
+        self.load_alarms_file(get_path(alarm_file), int(max_attempts))
 
         # Initialize the queue and start the process
         self.__queue = multiprocessing.Queue()
@@ -159,7 +159,7 @@ class Manager(object):
         log.debug("Stack trace: \n {}".format(traceback.format_exc()))
         sys.exit(1)
 
-    def load_alarms_file(self, file_path):
+    def load_alarms_file(self, file_path, max_attempts):
         log.info("Loading Alarms from the file at {}".format(file_path))
         try:
             with open(file_path, 'r') as f:
@@ -174,7 +174,7 @@ class Manager(object):
                     self.set_optional_args(str(alarm))
                     if _type == 'discord':
                         from Discord import DiscordAlarm
-                        self.__alarms.append(DiscordAlarm(alarm, self.__google_key))
+                        self.__alarms.append(DiscordAlarm(alarm, max_attempts, self.__google_key))
                     elif _type == 'facebook_page':
                         from FacebookPage import FacebookPageAlarm
                         self.__alarms.append(FacebookPageAlarm(alarm))
@@ -345,6 +345,7 @@ class Manager(object):
         quick_id = pkmn['quick_id']
         charge_id = pkmn['charge_id']
         size = pkmn['size']
+        gender = pkmn['gender']
         cp = '?'
         level = '?'
         ditto_id = pkmn['ditto_id']
@@ -499,6 +500,18 @@ class Manager(object):
                     log.info("{} rejected: Size information was missing - (F #{})".format(name, filt_ct))
                     continue
                 log.debug("Pokemon 'size' was not checked because it was missing.")
+
+            # Check for a valid gender
+            if gender != 'unknown':
+                if not filt.check_gender(gender):
+                    if self.__quiet is False:
+                        log.info("{} rejected: Gender ({}) was not correct - (F #{})".format(name, gender, filt_ct))
+                    continue
+            else:
+                if filt.ignore_missing is True:
+                    log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
+                    continue
+                log.debug("Pokemon 'gender' was not checked because it was missing.")
 
             # Nothing left to check, so it must have passed
             passed = True
@@ -735,6 +748,7 @@ class Manager(object):
             "dist": get_dist_as_str(dist),
             'dir': get_cardinal_dir([lat, lng], self.__latlng),
             'new_team': cur_team,
+            'new_team_id': "team{}".format(to_team_id),
             'old_team': old_team
         })
         self.add_optional_travel_arguments(gym)
