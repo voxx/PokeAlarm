@@ -405,7 +405,7 @@ class Manager(object):
                                         log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
                                         break
                                 except Exception as e:
-                                    log.error("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
+                                    log.error("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
                                     time.sleep(5)
                     continue
             else:
@@ -554,7 +554,7 @@ class Manager(object):
                         break
                 except Exception as e:
                     # Exceeded maximum attempts - give up
-                    log.error("Attempt {} failed for {}! Error: {}".format(attempts, name, str(e)))
+                    log.error("Attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
                     time.sleep(5)
 
         # Finally, add in all the extra crap we waited to calculate until now
