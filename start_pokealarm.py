@@ -131,6 +131,7 @@ def parse_settings(root_path):
                         help='Maximum number of attempts an alarm makes to send a notification.')
     parser.add_argument('-tz', '--timezone', type=str, action='append', default=[None],
                         help='Timezone used for notifications.  Ex: "America/Los_Angeles"')
+    parser.add_argument('-vsnipe', '--vsnipe', action='store_true', default=False, help='Enable VSnipe CP check.')
 
     args = parser.parse_args()
 
@@ -187,7 +188,8 @@ def parse_settings(root_path):
             filter_file=args.filters[m_ct] if len(args.filters) > 1 else args.filters[0],
             geofence_file=args.geofences[m_ct] if len(args.geofences) > 1 else args.geofences[0],
             alarm_file=args.alarms[m_ct] if len(args.alarms) > 1 else args.alarms[0],
-            debug=config['DEBUG']
+            debug=config['DEBUG'],
+            vsnipe=args.vsnipe
         )
         if m.get_name() not in managers:
             # Add the manager to the map

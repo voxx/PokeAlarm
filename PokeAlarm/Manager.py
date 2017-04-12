@@ -28,11 +28,13 @@ with open(vsc) as json_data_file:
 class Manager(object):
 
     def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, quiet,
-                 filter_file, geofence_file, alarm_file, debug):
+                 filter_file, geofence_file, alarm_file, debug, vsnipe):
         # Set the name of the Manager
         self.__name = str(name).lower()
         log.info("----------- Manager '{}' is being created.".format(self.__name))
         self.__debug = debug
+        self.__vsnipe = vsnipe
+        log.info("----------- VSnipe CP Check Enabled: ".format(self.__vsnipe))
 
         # Get the Google Maps API
         self.__google_key = google_key
@@ -371,42 +373,43 @@ class Manager(object):
                         log.info("{} rejected: IV percent ({:.2f}) not in range {:.2f} to {:.2f} - (F #{})".format(
                             name, iv, filt.min_iv, filt.max_iv, filt_ct))
 
-                        # Check for bubblestrat mons
-                        bubble_dex = [25, 26, 50, 63, 64, 92, 93]
-                        if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
-                            log.info("{} may be a bubbler. Triggering VSnipe CP Check!".format(name))
+                        # Check CP/Level for bubblestrat mons
+                        if self.__vsnipe:
+                            bubble_dex = [25, 26, 50, 63, 64, 92, 93]
+                            if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
+                                log.info("{} may be a bubbler. Triggering VSnipe CP Check!".format(name))
 
-                            attempts = 0
-                            while True:
-                                attempts += 1
-                                try:
-                                    if attempts < 3:
-                                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
-                                        vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
+                                attempts = 0
+                                while True:
+                                    attempts += 1
+                                    try:
+                                        if attempts < 3:
+                                            log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
+                                            vsnipe_data = self.get_pokemon_cp(lat, lng, pkmn_id)
 
-                                        vsnipe = json.loads(vsnipe_data)
-                                        if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
-                                            d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                                            cp = d['cp']
-                                            level = d['level']
+                                            vsnipe = json.loads(vsnipe_data)
+                                            if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
+                                                d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
+                                                cp = d['cp']
+                                                level = d['level']
 
-                                            # Check potential "bubble" attacker/defender for low cp value and low level
-                                            if int(cp) < 35 and int(level) < 4:
-                                                log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
-                                                passed = True
+                                                # Check potential "bubble" attacker/defender for low cp value and low level
+                                                if int(cp) < 35 and int(level) < 4:
+                                                    log.info('VSnipe found a bubbler! {} CP is {}.'.format(name, str(cp)))
+                                                    passed = True
+                                                else:
+                                                    log.info('{} rejected: CP is {} and it is not a bubbler.'.format(name, str(cp)))
+                                                break
                                             else:
-                                                log.info('{} rejected: CP is {} and it is not a bubbler.'.format(name, str(cp)))
-                                            break
+                                                # VSnipe API check failed - try again if under max attempts
+                                                log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
                                         else:
-                                            # VSnipe API check failed - try again if under max attempts
-                                            log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
-                                    else:
-                                        # Exceeded maximum attempts - give up
-                                        log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
-                                        break
-                                except Exception as e:
-                                    log.error("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
-                                    time.sleep(5)
+                                            # Exceeded maximum attempts - give up
+                                            log.error('VSnipe maximum attempts exceeded for {}. Giving up!'.format(attempts, name))
+                                            break
+                                    except Exception as e:
+                                        log.error("VSnipe attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
+                                        time.sleep(5)
                     continue
             else:
                 if filt.ignore_missing is True:
@@ -528,34 +531,36 @@ class Manager(object):
             log.info("{} rejected: not inside geofence(s)".format(name))
             return
 
-        attempts = 0
-        if cp == '?':
-            pid = ditto_id if ditto_id is not '?' else pkmn_id
-            while True:
-                attempts += 1
-                try:
-                    if attempts < 3:
-                        log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
-                        vsnipe_data = self.get_pokemon_cp(lat, lng, pid)
+        # Check CP/Level for filtered mons
+        if self.__vsnipe:
+            attempts = 0
+            if cp == '?':
+                pid = ditto_id if ditto_id is not '?' else pkmn_id
+                while True:
+                    attempts += 1
+                    try:
+                        if attempts < 3:
+                            log.info("VSnipe attempt {} starting for {}. Waiting for response.".format(attempts, name))
+                            vsnipe_data = self.get_pokemon_cp(lat, lng, pid)
 
-                        vsnipe = json.loads(vsnipe_data)
-                        if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
-                            d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                            cp = d['cp']
-                            level = d['level']
-                            log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
-                            break
+                            vsnipe = json.loads(vsnipe_data)
+                            if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
+                                d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
+                                cp = d['cp']
+                                level = d['level']
+                                log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
+                                break
+                            else:
+                                # VSnipe API check failed
+                                log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
                         else:
-                            # VSnipe API check failed
-                            log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
-                    else:
-                        # VSnipe API check failed - try again if under max attempts
-                        log.error('VSnipe max attempts exceeded for {}. Giving up!'.format(name))
-                        break
-                except Exception as e:
-                    # Exceeded maximum attempts - give up
-                    log.error("Attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
-                    time.sleep(5)
+                            # VSnipe API check failed - try again if under max attempts
+                            log.error('VSnipe max attempts exceeded for {}. Giving up!'.format(name))
+                            break
+                    except Exception as e:
+                        # Exceeded maximum attempts - give up
+                        log.error("Attempt {} failed for {}! Error: {}".format(attempts, name, repr(e)))
+                        time.sleep(5)
 
         # Finally, add in all the extra crap we waited to calculate until now
         time_str = get_time_as_str(pkmn['disappear_time'], self.__timezone)
