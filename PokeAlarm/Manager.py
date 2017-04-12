@@ -34,7 +34,7 @@ class Manager(object):
         log.info("----------- Manager '{}' is being created.".format(self.__name))
         self.__debug = debug
         self.__vsnipe = vsnipe
-        log.info("----------- VSnipe CP Check Enabled: ".format(str(self.__vsnipe)))
+        log.info("----------- VSnipe cp check is: {} ".format("ENABLED" if self.__vsnipe == True else "DISABLED"))
 
         # Get the Google Maps API
         self.__google_key = google_key
@@ -374,7 +374,7 @@ class Manager(object):
                             name, iv, filt.min_iv, filt.max_iv, filt_ct))
 
                         # Check CP/Level for bubblestrat mons
-                        if self.__vsnipe:
+                        if self.__vsnipe == True:
                             bubble_dex = [25, 26, 50, 63, 64, 92, 93]
                             if pkmn_id in bubble_dex and atk > 10 and def_ < 3 and sta < 3:
                                 log.info("{} may be a bubbler. Triggering VSnipe CP Check!".format(name))
@@ -532,7 +532,7 @@ class Manager(object):
             return
 
         # Check CP/Level for filtered mons
-        if self.__vsnipe:
+        if self.__vsnipe == True:
             attempts = 0
             if cp == '?':
                 pid = ditto_id if ditto_id is not '?' else pkmn_id
