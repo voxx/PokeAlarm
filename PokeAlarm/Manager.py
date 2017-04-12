@@ -552,7 +552,11 @@ class Manager(object):
                                 break
                             else:
                                 # VSnipe API check failed
-                                log.error('VSnipe attempt {} failed for {}.'.format(attempts, name))
+                                if 'error' in vsnipe['data'][0]:
+                                    e = vsnipe['data'][0]['error']
+                                else:
+                                    e = vsnipe['data'][0]
+                                log.error('VSnipe attempt {} failed for {}. Error: {}'.format(attempts, name, repr(e)))
                         else:
                             # VSnipe API check failed - try again if under max attempts
                             log.error('VSnipe max attempts exceeded for {}. Giving up!'.format(name))
