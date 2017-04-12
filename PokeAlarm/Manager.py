@@ -937,12 +937,12 @@ class Manager(object):
         data = {"lat":lat, "lng":lng, "pid":pid}
         url = vsnipe_config['server']['protocol'] + "://" + vsnipe_config['server']['host'] + ":" + vsnipe_config['server']['port'] + "/vsnipe/"
 
-        # Send the pokemon data to VSNIPE API to check CP for level 30
+        # Send the pokemon data to VSNIPE API to check CP for level 30+
         try:
             api_response	= s.post(url, data=data, timeout=None)
             response_text	= str(api_response.text)
         except Exception as e:
-            log.info('Exception occurred with the VSnipe API: {}'.format(str(e)))
+            log.info('Exception occurred with the VSnipe API: {}'.format(repr(e)))
             return 'ERROR'
 
         return response_text
