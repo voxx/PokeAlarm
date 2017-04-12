@@ -34,7 +34,7 @@ class Manager(object):
         log.info("----------- Manager '{}' is being created.".format(self.__name))
         self.__debug = debug
         self.__vsnipe = vsnipe
-        log.info("----------- VSnipe CP Check Enabled: ".format(self.__vsnipe ? "True" : "False"))
+        log.info("----------- VSnipe CP Check Enabled: ".format(str(self.__vsnipe)))
 
         # Get the Google Maps API
         self.__google_key = google_key
