@@ -34,7 +34,7 @@ class Manager(object):
         log.info("----------- Manager '{}' is being created.".format(self.__name))
         self.__debug = debug
         self.__vsnipe = vsnipe
-        log.info("----------- VSnipe cp check is: {} ".format("ENABLED" if self.__vsnipe == True else "DISABLED"))
+        log.info("-- VSnipe CP Check: {} ".format("ENABLED" if self.__vsnipe == True else "DISABLED"))
 
         # Get the Google Maps API
         self.__google_key = google_key
@@ -347,10 +347,12 @@ class Manager(object):
         quick_id = pkmn['quick_id']
         charge_id = pkmn['charge_id']
         size = pkmn['size']
-        gender = pkmn['gender']
         cp = '?'
         level = '?'
         ditto_id = pkmn['ditto_id']
+        height = 'unkn'
+        weight = 'unkn'
+        gender = '?'
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -548,6 +550,16 @@ class Manager(object):
                                 d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
                                 cp = d['cp']
                                 level = d['level']
+                                quick_id = d['move_1']
+                                charge_id = d['move_2']
+                                atk = d['individual_attack']
+                                def_ = d['individual_defense']
+                                sta = d['individual_stamina']
+                                height = d['height']
+                                weight = d['weight']
+                                gender = d['gender']
+                                iv = float(((atk + def_ + sta) * 100) / float(45))
+
                                 log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                                 break
                             else:
@@ -581,7 +593,10 @@ class Manager(object):
             'quick_move': self.__move_name.get(quick_id, 'unknown'),
             'charge_move': self.__move_name.get(charge_id, 'unknown'),
             'cp': "{}".format(str(cp)) if cp != '?' else '?',
-            'level': "{}".format(str(level)) if level != '?' else '?'
+            'level': "{}".format(str(level)) if level != '?' else '?',
+            'height': "{}".format(str(height)) if height != 'unkn' else 'unkn',
+            'weight': "{}".format(str(weight)) if weight != 'unkn' else 'unkn',
+            'gender': "{}".format(str(gender)) if gender != '?' else '?'
         })
         self.add_optional_travel_arguments(pkmn)
 
