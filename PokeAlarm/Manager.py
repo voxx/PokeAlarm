@@ -550,15 +550,16 @@ class Manager(object):
                                 d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
                                 cp = d['cp']
                                 level = d['level']
-                                quick_id = d['move_1']
-                                charge_id = d['move_2']
                                 atk = d['individual_attack']
                                 def_ = d['individual_defense']
                                 sta = d['individual_stamina']
-                                height = d['height']
-                                weight = d['weight']
-                                gender = d['gender']
                                 iv = float(((atk + def_ + sta) * 100) / float(45))
+                                if ditto_id == '?':
+                                    quick_id = d['move_1']
+                                    charge_id = d['move_2']
+                                    height = d['height']
+                                    weight = d['weight']
+                                    gender = d['gender']
 
                                 log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                                 break
