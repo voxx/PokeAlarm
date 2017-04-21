@@ -18,7 +18,7 @@ import googlemaps
 from . import config
 from Filters import Geofence, load_pokemon_section, load_pokestop_section, load_gym_section
 from Utils import get_cardinal_dir, get_dist_as_str, get_earth_dist, get_path, get_time_as_str, \
-    require_and_remove_key, parse_boolean, contains_arg, get_pokemon_gender
+    require_and_remove_key, parse_boolean, contains_arg, get_pokemon_gender, get_pokemon_size
 log = logging.getLogger('Manager')
 
 vsc = os.path.join(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir)), 'vsnipe/config/config.json') # Path to VSnipe Config
@@ -560,6 +560,7 @@ class Manager(object):
                                     height = d['height']
                                     weight = d['weight']
                                     gender = get_pokemon_gender(d['gender'])
+                                    size = get_pokemon_size(pid, height, weight)
 
                                 log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                                 break
@@ -600,7 +601,8 @@ class Manager(object):
             'gender': "{}".format(str(gender)) if gender != 'unknown' else '?',
             'atk': "{}".format(atk) if atk != '?' else '?',
             'def': "{}".format(def_) if def_ != '?' else '?',
-            'sta': "{}".format(sta) if sta != '?' else '?'
+            'sta': "{}".format(sta) if sta != '?' else '?',
+            'size': "{}".format(size) if size != 'unknown' else 'unkn'
         })
         self.add_optional_travel_arguments(pkmn)
 
