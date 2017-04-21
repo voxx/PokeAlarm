@@ -18,7 +18,7 @@ import googlemaps
 from . import config
 from Filters import Geofence, load_pokemon_section, load_pokestop_section, load_gym_section
 from Utils import get_cardinal_dir, get_dist_as_str, get_earth_dist, get_path, get_time_as_str, \
-    require_and_remove_key, parse_boolean, contains_arg
+    require_and_remove_key, parse_boolean, contains_arg, get_pokemon_gender
 log = logging.getLogger('Manager')
 
 vsc = os.path.join(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir)), 'vsnipe/config/config.json') # Path to VSnipe Config
@@ -352,7 +352,7 @@ class Manager(object):
         ditto_id = pkmn['ditto_id']
         height = 'unkn'
         weight = 'unkn'
-        gender = '?'
+        gender = 'unknown'
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -548,18 +548,18 @@ class Manager(object):
                             vsnipe = json.loads(vsnipe_data)
                             if 'pokemon' in vsnipe['data'][0] and vsnipe['data'][0]['pokemon'] != 'False':
                                 d = ast.literal_eval(vsnipe['data'][0]['pokemon'])
-                                cp = d['cp']
                                 level = d['level']
                                 atk = d['individual_attack']
                                 def_ = d['individual_defense']
                                 sta = d['individual_stamina']
                                 iv = float(((atk + def_ + sta) * 100) / float(45))
                                 if ditto_id == '?':
+                                    cp = d['cp']
                                     quick_id = d['move_1']
                                     charge_id = d['move_2']
                                     height = d['height']
                                     weight = d['weight']
-                                    gender = d['gender']
+                                    gender = get_pokemon_gender(d['gender'])
 
                                 log.info('VSnipe successfully encountered {} and the CP is {}.'.format(name, str(cp)))
                                 break
@@ -597,7 +597,7 @@ class Manager(object):
             'level': "{}".format(str(level)) if level != '?' else '?',
             'height': "{}".format(str(height)) if height != 'unkn' else 'unkn',
             'weight': "{}".format(str(weight)) if weight != 'unkn' else 'unkn',
-            'gender': "{}".format(str(gender)) if gender != '?' else '?'
+            'gender': "{}".format(str(gender)) if gender != 'unknown' else '?'
         })
         self.add_optional_travel_arguments(pkmn)
 
