@@ -597,7 +597,10 @@ class Manager(object):
             'level': "{}".format(str(level)) if level != '?' else '?',
             'height': "{}".format(str(round(height, 2))) if height != 'unkn' else 'unkn',
             'weight': "{}".format(str(round(weight, 2))) if weight != 'unkn' else 'unkn',
-            'gender': "{}".format(str(gender)) if gender != 'unknown' else '?'
+            'gender': "{}".format(str(gender)) if gender != 'unknown' else '?',
+            'atk': "{}".format(atk) if atk != '?' else '?',
+            'def': "{}".format(def_) if def_ != '?' else '?',
+            'sta': "{}".format(sta) if sta != '?' else '?'
         })
         self.add_optional_travel_arguments(pkmn)
 
